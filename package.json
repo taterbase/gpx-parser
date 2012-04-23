@@ -1,0 +1,18 @@
+{
+	"name": "gpx-parser",
+	"description": "Node.js module for parsing .gpx files",
+	"author": "George Shank <georges@mediarain.com>",
+	"version": "0.0.1",
+	"private": false,
+	"main": "index.js",
+	"repository": "git://github.com/shankga/gpx-parser.git",
+	"homepage": "https://github.com/shankga/gpx-parser",
+	"dependencies": {
+		"xml2js": "~0.1.13"
+	},
+	"devDependencies": {
+		"mocha": "*",
+		"should": "*"
+	},
+	"engine": "node >= 0.6.6"
+}
