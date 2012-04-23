@@ -5,8 +5,8 @@
 	"version": "0.0.2",
 	"private": false,
 	"main": "index.js",
-	"repository": "git://github.com/shankga/gpx-parser.git",
-	"homepage": "https://github.com/shankga/gpx-parser",
+	"repository": "git://github.com/ifit/gpx-parser.git",
+	"homepage": "https://github.com/ifit/gpx-parser",
 	"dependencies": {
 		"xml2js": "~0.1.13"
 	},
