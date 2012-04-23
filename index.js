@@ -24,7 +24,7 @@ var getTrk = function(trkarr) {
   return trk;
 };
 
-var parseGpx = function(gpx, callback) {
+var GpxParser = function(gpx, callback) {
   parser.parseString(gpx, function (err, result) {
     if (err) {
       callback(new Error("gpx: XML Parse Error: " + err.message));
