@@ -4,19 +4,26 @@ var xml2js = require('xml2js')
 var getTrk = function(trkarr, callback) {
   var trk = []
     , segs
-    , seg;
+    , trkpts
+    , trkpt;
   if (!(trkarr instanceof Array)) {
     trkarr = [trkarr];
   }
   for (var i = 0, li = trkarr.length; i < li; ++i) {
-    segs = trkarr[i].trkseg.trkpt;
+    segs = trkarr[i].trkseg;
+    if(!(segs instanceof Array)){
+      segs = [segs];
+    }
     for (var j = 0, lj = segs.length; j < lj; ++j) {
-      seg = segs[j];
-      if (seg.hasOwnProperty('@') && seg['@'].hasOwnProperty('lat')) {
-        if (seg.hasOwnProperty('ele')) {
-          trk.push({lat: parseFloat(seg['@'].lat), lng: parseFloat(seg['@'].lon), elev: parseFloat(seg.ele)});
-        } else {
-          trk.push({lat: parseFloat(seg['@'].lat), lng: parseFloat(seg['@'].lon)});
+      trkpts = segs[j].trkpt;
+      for(var k = 0, lk = trkpts.length; k < lk; ++k){
+        trkpt = trkpts[k];
+        if (trkpt.hasOwnProperty('@') && trkpt['@'].hasOwnProperty('lat')) {
+          if (trkpt.hasOwnProperty('ele')) {
+            trk.push({lat: parseFloat(trkpt['@'].lat), lng: parseFloat(trkpt['@'].lon), elev: parseFloat(trkpt.ele)});
+          } else {
+            trk.push({lat: parseFloat(trkpt['@'].lat), lng: parseFloat(trkpt['@'].lon)});
+          }
         }
       }
     }
