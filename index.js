@@ -28,7 +28,9 @@ var getTrk = function(trkarr, callback) {
       trkpts = segs[j].trkpt;
       
       for(var k = 0, lk = trkpts.length; k < lk; ++k){
-        aggregatePoints(trk.values, trkpts[k], callback);
+        aggregatePoints(trk.values, trkpts[k], function(err){
+          return callback(err);
+        });
       }
     }
   }
@@ -50,7 +52,9 @@ var getRte = function(rtearr, callback){
       rte.name = rtearr[i].name;
     rtepts = rtearr[i].rtept;
     for (var j = 0, lj = rtepts.length; j < lj; ++j) {
-      aggregatePoints(rte.values, rtepts[j], callback);
+      aggregatePoints(rte.values, rtepts[j], function(err){
+        if(err) return callback(err);
+      });
     }
   }
   return calculateSpeeds(rte, callback);
@@ -67,7 +71,9 @@ var getWpt = function(wptarr, callback){
   }
 
   for (var i = 0, li = wptarr.length; i < li; ++i) {
-    aggregatePoints(wpt.values, wptarr[i], callback);
+    aggregatePoints(wpt.values, wptarr[i], function(err){
+      if(err) return callback(err);
+    });
   }
   return calculateSpeeds(wpt, callback);
 };
