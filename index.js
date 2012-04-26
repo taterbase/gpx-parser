@@ -3,8 +3,21 @@ var xml2js = require('xml2js')
   , parser = new xml2js.Parser();
 
 var getTrk = function(trkarr, callback) {
-  var trk = { name: null,
-              values:[]
+  var trk = {name: null,
+             values: [],
+             data:[
+              {"type": "bpm",
+               "values":[]
+              },
+              {
+                "type": "mph",
+                "values":[]
+              },
+              {
+                "type": "cad",
+                "values": []
+              }
+             ]
             }
     , segs
     , trkpts
@@ -23,18 +36,18 @@ var getTrk = function(trkarr, callback) {
     
     if(segs.hasOwnProperty('name'))
       trk.name = segs.name;
-    
+
     for (var j = 0, lj = segs.length; j < lj; ++j) {
       trkpts = segs[j].trkpt;
       
       for(var k = 0, lk = trkpts.length; k < lk; ++k){
-        aggregatePoints(trk.values, trkpts[k], function(err){
+        aggregatePoints(trk, trkpts[k], function(err){
           return callback(err);
         });
       }
     }
   }
-  return calculateSpeeds(trk, callback);
+  return interpolate(trk, callback);
 };
 
 var getRte = function(rtearr, callback){
@@ -52,12 +65,12 @@ var getRte = function(rtearr, callback){
       rte.name = rtearr[i].name;
     rtepts = rtearr[i].rtept;
     for (var j = 0, lj = rtepts.length; j < lj; ++j) {
-      aggregatePoints(rte.values, rtepts[j], function(err){
+      aggregatePoints(rte, rtepts[j], function(err){
         if(err) return callback(err);
       });
     }
   }
-  return calculateSpeeds(rte, callback);
+  return callback(null, rte);
 };
 
 var getWpt = function(wptarr, callback){
@@ -71,11 +84,11 @@ var getWpt = function(wptarr, callback){
   }
 
   for (var i = 0, li = wptarr.length; i < li; ++i) {
-    aggregatePoints(wpt.values, wptarr[i], function(err){
+    aggregatePoints(wpt, wptarr[i], function(err){
       if(err) return callback(err);
     });
   }
-  return calculateSpeeds(wpt, callback);
+  return callback(null, wpt);
 };
 
 var aggregatePoints = function(container, dataPoint, callback){
@@ -89,48 +102,40 @@ var aggregatePoints = function(container, dataPoint, callback){
     return callback(new Error("No location data available"));
 
   if (dataPoint.hasOwnProperty('time'))
-    point.time = new Date(dataPoint.time);
+    point.time = ((new Date(dataPoint.time).getTime())/1000);
   else
     return callback(new Error("No time information available"));
 
   if (dataPoint.hasOwnProperty('ele'))
     point.elevation = dataPoint.ele;
 
-  container.push(point);
+  if (dataPoint.hasOwnProperty('extensions'))
+    if(dataPoint.extensions.hasOwnProperty('gpxtpx:TrackPointExtension'))
+    {
+      if(dataPoint.extensions['gpxtpx:TrackPointExtension'].hasOwnProperty('gpxtpx:hr'))
+        container.data[0].values.push(new Array(dataPoint.extensions['gpxtpx:TrackPointExtension']['gpxtpx:hr'], point.time));
+      
+      if(dataPoint.extensions['gpxtpx:TrackPointExtension'].hasOwnProperty('gpxtpx:cad'))
+        container.data[2].values.push(new Array(dataPoint.extensions['gpxtpx:TrackPointExtension']['gpxtpx:cad'], point.time));  
+    }
+  container.values.push(point);
 };
 
-var calculateSpeeds = function(coordinates, callback){
-  var result = { "type": "mph",
-                 "values": []
-               }
-  , distance = 0
-  , bpoint
-  , epoint
-  , miles = 0; 
+var interpolate = function(trk, callback){
 
-  coordinates.values = coordinates.values.sort(function(a, b){
-    return a.time - b.time;
-  });
+  var points = trk.values
+      // , bpmArr = trk.data[0].values
+      , mphArr = trk.data[1].values
+      // , cadArr = trk.data[2].values
+      , distance
+      , time;
 
-  bpoint = coordinates.values[0];
-
-  for(var i = 1, li = coordinates.values.length; i < li; ++i){
-    epoint = coordinates.values[i];
-    distance += geolib.getDistance(epoint, bpoint);
-
-    if(((epoint.time.getTime() - bpoint.time.getTime())/3600000) > .9){
-
-      miles = geolib.convertUnit("mi", distance, 1);
-      distance = 0;
-      result.values.push(new Array((epoint.time.getTime()/1000), miles));
-
-      bpoint = epoint;
-    }
+  for(var i = 1, li = points.length; i < li; ++i){
+    distance = geolib.getDistance(points[i], points[(i-1)]);
+    mphArr.push(new Array(distance, points[i].time));
   }
   
-  return callback(null, result);
-
-  //callback(null, result);
+  return callback(null, trk);
 };
 
 var GpxParser = function(gpx, callback) {
@@ -144,7 +149,7 @@ var GpxParser = function(gpx, callback) {
     else if(result.hasOwnProperty('wpt'))
       return getWpt(result.wpt, callback);
     else  //No usable data
-      return callback(null, null);
+      return callback(new Error("No useable data in this gpx file."));
   });
 };
 
