@@ -2,7 +2,7 @@
 	"name": "gpx-parser",
 	"description": "Node.js module for parsing .gpx files",
 	"author": "George Shank <georges@mediarain.com>",
-	"version": "0.0.6",
+	"version": "0.0.7",
 	"private": false,
 	"main": "index.js",
 	"repository": "git://github.com/ifit/gpx-parser.git",

@@ -89,7 +89,7 @@ var aggregatePoints = function(container, dataPoint, callback){
     return callback(new Error("No location data available"));
 
   if (dataPoint.hasOwnProperty('time'))
-    point.time = dataPoint.time;
+    point.time = new Date(dataPoint.time);
   else
     return callback(new Error("No time information available"));
 
@@ -103,23 +103,34 @@ var calculateSpeeds = function(coordinates, callback){
   var result = { "type": "mph",
                  "values": []
                }
-  , distance
-  , time; 
+  , distance = 0
+  , bpoint
+  , epoint
+  , miles = 0; 
 
-  for(var i = 1, li = coordinates.values.length; i < li; ++i){
-    distance = geolib.getDistance(coordinates.values[i], coordinates.values[(i-1)]);
-    distance = geolib.convertUnit("mi", distance, 1);
-
-    time = new Date(coordinates.values[i].time);
-    time = (time.getTime() / 1000);
-
-    result.values.push(new Array(time, distance));
-  }
-  result.values = result.values.sort(function(a, b){
-    return a[0] - b[0];
+  coordinates.values = coordinates.values.sort(function(a, b){
+    return a.time - b.time;
   });
 
-  callback(null, result);
+  bpoint = coordinates.values[0];
+
+  for(var i = 1, li = coordinates.values.length; i < li; ++i){
+    epoint = coordinates.values[i];
+    distance += geolib.getDistance(epoint, bpoint);
+
+    if(((epoint.time.getTime() - bpoint.time.getTime())/3600000) > .9){
+
+      miles = geolib.convertUnit("mi", distance, 1);
+      distance = 0;
+      result.values.push(new Array((epoint.time.getTime()/1000), miles));
+
+      bpoint = epoint;
+    }
+  }
+  
+  return callback(null, result);
+
+  //callback(null, result);
 };
 
 var GpxParser = function(gpx, callback) {
