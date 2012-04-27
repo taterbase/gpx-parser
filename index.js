@@ -16,6 +16,10 @@ var getTrk = function(trkarr, callback) {
               {
                 "type": "cad",
                 "values": []
+              },
+              {
+                "type": "ele",
+                "values": []
               }
              ]
             }
@@ -127,12 +131,20 @@ var interpolate = function(trk, callback){
       // , bpmArr = trk.data[0].values
       , mphArr = trk.data[1].values
       // , cadArr = trk.data[2].values
+      , eleArr = trk.data[3].values
       , distance
+      , elevationChange
       , time;
 
   for(var i = 1, li = points.length; i < li; ++i){
     distance = geolib.getDistance(points[i], points[(i-1)]);
     mphArr.push(new Array(distance, points[i].time));
+
+    if(points[1].hasOwnProperty('elevation'))
+    {
+      elevationChange = points[i].elevation - points[(i-1)].elevation;
+      eleArr.push(new Array(elevationChange, points[i].time));
+    }
   }
   
   return callback(null, trk);
