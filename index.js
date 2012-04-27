@@ -10,7 +10,7 @@ var getTrk = function(trkarr, callback) {
                "values":[]
               },
               {
-                "type": "mph",
+                "type": "mps",
                 "values":[]
               },
               {
@@ -18,8 +18,12 @@ var getTrk = function(trkarr, callback) {
                 "values": []
               },
               {
-                "type": "ele",
+                "type": "inc",
                 "values": []
+              },
+              {
+                "type": "meters",
+                "values":[]
               }
              ]
             }
@@ -132,13 +136,17 @@ var interpolate = function(trk, callback){
       , mphArr = trk.data[1].values
       // , cadArr = trk.data[2].values
       , eleArr = trk.data[3].values
+      , meterArr = trk.data[4].values
       , distance
+      , totalDistance = 0
       , elevationChange
       , time;
 
   for(var i = 1, li = points.length; i < li; ++i){
-    distance = geolib.getDistance(points[i], points[(i-1)]);
+    totalDistance += distance = geolib.getDistance(points[i], points[(i-1)]);
+    
     mphArr.push(new Array(distance, points[i].time));
+    meterArr.push(new Array(totalDistance, points[i].time));
 
     if(points[1].hasOwnProperty('elevation'))
     {
