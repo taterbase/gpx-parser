@@ -121,10 +121,10 @@ var aggregatePoints = function(container, dataPoint, callback){
     if(dataPoint.extensions.hasOwnProperty('gpxtpx:TrackPointExtension'))
     {
       if(dataPoint.extensions['gpxtpx:TrackPointExtension'].hasOwnProperty('gpxtpx:hr'))
-        container.data[0].values.push(new Array(dataPoint.extensions['gpxtpx:TrackPointExtension']['gpxtpx:hr'], point.time));
+        container.data[0].values.push(new Array(point.time, dataPoint.extensions['gpxtpx:TrackPointExtension']['gpxtpx:hr']));
       
       if(dataPoint.extensions['gpxtpx:TrackPointExtension'].hasOwnProperty('gpxtpx:cad'))
-        container.data[2].values.push(new Array(dataPoint.extensions['gpxtpx:TrackPointExtension']['gpxtpx:cad'], point.time));  
+        container.data[2].values.push(new Array(point.time, dataPoint.extensions['gpxtpx:TrackPointExtension']['gpxtpx:cad']));  
     }
   container.values.push(point);
 };
@@ -145,13 +145,13 @@ var interpolate = function(trk, callback){
   for(var i = 1, li = points.length; i < li; ++i){
     totalDistance += distance = geolib.getDistance(points[i], points[(i-1)]);
     
-    mphArr.push(new Array(distance, points[i].time));
-    meterArr.push(new Array(totalDistance, points[i].time));
+    mphArr.push([points[i].time, distance]);
+    meterArr.push([points[i].time, totalDistance]);
 
     if(points[1].hasOwnProperty('elevation'))
     {
       elevationChange = points[i].elevation - points[(i-1)].elevation;
-      eleArr.push(new Array(elevationChange, points[i].time));
+      eleArr.push([points[i].time, elevationChange]);
     }
   }
   
