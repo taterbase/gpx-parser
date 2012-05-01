@@ -14,7 +14,7 @@ var getTrk = function(trkarr, callback) {
                 "values":[]
               },
               {
-                "type": "cad",
+                "type": "rpm",
                 "values": []
               },
               {
