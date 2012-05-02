@@ -6,7 +6,7 @@ var xml2js = require('xml2js')
 var getTrk = function(trkarr, callback) {
   // Building an empty object according to the data we MAY or may not get
   var trk = {name: null,
-             values: [],
+             path: [],
              summary:[
               {"type": "bpm",
                "values":[]
@@ -71,7 +71,7 @@ var getTrk = function(trkarr, callback) {
 //WIP: Rte's don't have as much info as trk, similar structure but with less emphasis
 var getRte = function(rtearr, callback){
   var rte = { name: null,
-              values:[]
+              path:[]
             }
   , rtepts
   , rtept;
@@ -95,7 +95,7 @@ var getRte = function(rtearr, callback){
 //WIP: wpts have the least accurate data. Similar to Rte's
 var getWpt = function(wptarr, callback){
   var wpt = { name: null,
-              values:[]
+              path:[]
             }
   , waypt;
 
