@@ -5,7 +5,7 @@ var xml2js = require('xml2js')
 var getTrk = function(trkarr, callback) {
   var trk = {name: null,
              values: [],
-             data:[
+             summary:[
               {"type": "bpm",
                "values":[]
               },
