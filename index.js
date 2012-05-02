@@ -145,14 +145,14 @@ var aggregatePoints = function(container, dataPoint, callback){
     }
 
   //Push point data on
-  container.values.push(point);
+  container.path.push(point);
 };
 
 
 var interpolate = function(trk, callback){
 
-  //Setting up arrays for potential data
-  var points = trk.values
+  //Setting up arraypaths for potential data
+  var points = trk.path
       , mpsArr = trk.summary[1].values
       , eleArr = trk.summary[3].values
       , meterArr = trk.summary[4].values
