@@ -71,7 +71,8 @@ var getTrk = function(trkarr, callback) {
 //WIP: Rte's don't have as much info as trk, similar structure but with less emphasis
 var getRte = function(rtearr, callback){
   var rte = { name: null,
-              path:[]
+              path:[],
+              summary: null
             }
   , rtepts
   , rtept;
@@ -95,7 +96,8 @@ var getRte = function(rtearr, callback){
 //WIP: wpts have the least accurate data. Similar to Rte's
 var getWpt = function(wptarr, callback){
   var wpt = { name: null,
-              path:[]
+              path:[],
+              summary: null
             }
   , waypt;
 
